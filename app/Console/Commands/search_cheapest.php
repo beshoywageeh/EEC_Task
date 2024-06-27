@@ -32,13 +32,13 @@ class search_cheapest extends Command
     $thresholdPrice = $this->argument('price');
 
     $cheapestProducts = DB::table('pharmacy_medicine')
-        ->where('price', '>', $thresholdPrice)
+            ->join('products', 'products.id', '=', 'pharmacy_medicine.product_id')
+            ->join('pharmacies', 'pharmacies.id', '=', 'pharmacy_medicine.pharmacy_id')
+            ->select('products.title as product_name', 'pharmacies.name as pharmacy_name', 'pharmacy_medicine.price as price')
+            ->where('pharmacy_medicine.price', '>', $thresholdPrice)
         ->limit(10)
         ->get(); // Retrieve the results
         \Log::info('Query executed:', ['price' => $thresholdPrice, 'result' => $cheapestProducts]);
         dd($cheapestProducts->toJson());
-}
-
-    
-    
+    }
 }
